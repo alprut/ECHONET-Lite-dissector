@@ -39,6 +39,10 @@ local function epcparser(classgroup, class, epc, pdc, edt, tree, edata)
             highvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, edata)
             do return end
         end
+        if class:uint() == 0x8F then -- bidirectional high voltage smart electric energy meter
+            bidir_highvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, edata)
+            do return end
+        end
     end
     tree:add(edata.fields.epc, epc)
     tree:add(edata.fields.epc, epc)
