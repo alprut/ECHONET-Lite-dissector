@@ -22,24 +22,24 @@
 local devicesuperclass = require("device-superclass")
 local list = require("echonet-lite-codelist")
 local properties = {
-    [0xC0] = "B-route identification number",
-    [0xD0] = "1-minute cumulative energy (forward/reverse direction)",
-    [0xD3] = "Coefficient",
-    [0xD7] = "Effective digits of cumulative energy",
-    [0xE0] = "Cumulative energy measurement (forward direction)",
-    [0xE1] = "Unit of cumulative energy (forward/reverse direction)",
-    [0xE2] = "Cumulative energy measurement history 1 (forward direction)",
-    [0xE3] = "Cumulative energy measurement (reverse direction)",
-    [0xE4] = "Cumulative energy measurement history 1 (reverse direction)",
-    [0xE5] = "Day for which the historical data of cumulative energy is to be retrieved 1",
-    [0xE7] = "Measured instantaneous power",
-    [0xE8] = "Measured instantaneous current",
-    [0xEA] = "Measured cumulative energy at fixed time (forward direction)",
-    [0xEB] = "Measured cumulative energy at fixed time (reverse direction)",
-    [0xEC] = "Cumulative energy measurement history 2 (forward/reverse direction)",
-    [0xED] = "Day for which the historical data of cumulative energy is to be retrieved 2",
-    [0xEE] = "Cumulative energy measurement history 3 (forward/reverse direction)",
-    [0xEF] = "Day for which the historical data of cumulative energy is to be retrieved 3",
+    [0xC0] = "Bルート識別番号",
+    [0xD0] = "1分積算電力量計測値（正方向、逆方向計測値）",
+    [0xD3] = "係数",
+    [0xD7] = "積算電力量有効桁数",
+    [0xE0] = "積算電力量計測値（正方向計測値）",
+    [0xE1] = "積算電力量単位（正方向、逆方向計測値）",
+    [0xE2] = "積算電力量計測値履歴１（正方向計測値）",
+    [0xE3] = "積算電力量計測値（逆方向計測値）",
+    [0xE4] = "積算電力量計測値履歴１（逆方向計測値）",
+    [0xE5] = "積算履歴収集日１",
+    [0xE7] = "瞬時電力計測値",
+    [0xE8] = "瞬時電流計測値",
+    [0xEA] = "定時積算電力量計測値（正方向計測値）",
+    [0xEB] = "定時積算電力量計測値（逆方向計測値）",
+    [0xEC] = "積算電力量計測値履歴２（正方向、逆方向計測値）",
+    [0xED] = "積算履歴収集日２",
+    [0xEE] = "積算電力量計測値履歴３（正方向、逆方向計測値）",
+    [0xEF] = "積算履歴収集日３",
 }
 
 -- ========================================================
@@ -68,9 +68,9 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
             if pdc:uint() ~= 16 then
                 do return end
             end
-            edttree:add(edt:range(0, 1), "Communication ID:", string.format("0x%02x", edt:range(0, 1):uint()))
-            edttree:add(edt:range(1, 3), "Manufacturer code:", tostring(edt:range(1, 3):bytes()))
-            edttree:add(edt:range(4, 12), "Free area:", tostring(edt:range(4, 12):bytes()))
+            edttree:add(edt:range(0, 1), "通信ID:", string.format("0x%02x", edt:range(0, 1):uint()))
+            edttree:add(edt:range(1, 3), "メーカコード:", tostring(edt:range(1, 3):bytes()))
+            edttree:add(edt:range(4, 12), "自由領域:", tostring(edt:range(4, 12):bytes()))
 
         elseif epc:uint() == 0xD0 then
             -- 1-minute cumulative energy measurement (forward/reverse) (15 bytes)
@@ -87,13 +87,13 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
             local second = edt:range(6, 1):uint()
             local forward = edt:range(7, 4):uint()
             local reverse = edt:range(11, 4):uint()
-            edttree:add(edt:range(0, 4), string.format("Date: %04d/%02d/%02d", year, month, day))
-            edttree:add(edt:range(4, 3), string.format("Time: %02d:%02d:%02d", hour, minute, second))
-            edttree:add(edt:range(7, 4), string.format("Forward energy: %d", forward))
-            edttree:add(edt:range(11, 4), string.format("Reverse energy: %d", reverse))
-            edttree:append_text(string.format(" (%04d/%02d/%02d %02d:%02d:%02d fwd=%d rev=%d)",
+            edttree:add(edt:range(0, 4), string.format("計測年月日: %04d/%02d/%02d", year, month, day))
+            edttree:add(edt:range(4, 3), string.format("計測時刻: %02d:%02d:%02d", hour, minute, second))
+            edttree:add(edt:range(7, 4), string.format("積算電力量（正方向）: %d", forward))
+            edttree:add(edt:range(11, 4), string.format("積算電力量（逆方向）: %d", reverse))
+            edttree:append_text(string.format(" (%04d/%02d/%02d %02d:%02d:%02d 正方向=%d 逆方向=%d)",
                 year, month, day, hour, minute, second, forward, reverse))
-            tree:append_text(string.format(" = %04d/%02d/%02d %02d:%02d:%02d fwd=%d rev=%d",
+            tree:append_text(string.format(" = %04d/%02d/%02d %02d:%02d:%02d 正方向=%d 逆方向=%d",
                 year, month, day, hour, minute, second, forward, reverse))
 
         elseif epc:uint() == 0xD3 then
@@ -109,8 +109,8 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
             if pdc:uint() ~= 1 then
                 do return end
             end
-            edttree:append_text(string.format(" (%d digits)", edt:uint()))
-            tree:append_text(string.format(" = %d digits", edt:uint()))
+            edttree:append_text(string.format(" (%d桁)", edt:uint()))
+            tree:append_text(string.format(" = %d桁", edt:uint()))
 
         elseif epc:uint() == 0xE0 or epc:uint() == 0xE3 then
             -- Cumulative energy measurement forward/reverse (4 bytes, uint32)
@@ -136,7 +136,7 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
                 [0x0C] = "1000 kWh",
                 [0x0D] = "10000 kWh",
             }
-            local u = unit_map[edt:uint()] or string.format("Unknown (0x%02x)", edt:uint())
+            local u = unit_map[edt:uint()] or string.format("不明 (0x%02x)", edt:uint())
             edttree:append_text(string.format(" (%s)", u))
             tree:append_text(string.format(" = %s", u))
 
@@ -147,22 +147,22 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
                 do return end
             end
             local collection_day = edt:range(0, 2):uint()
-            edttree:add(edt:range(0, 2), string.format("Collection day: %d (%s)",
-                collection_day, collection_day == 0 and "today" or string.format("%d day(s) ago", collection_day)))
+            edttree:add(edt:range(0, 2), string.format("積算履歴収集日: %d (%s)",
+                collection_day, collection_day == 0 and "当日" or string.format("%d日前", collection_day)))
             local count = math.floor((pdc:uint() - 2) / 4)
             for i = 0, count - 1 do
                 local val = edt:range(2 + i * 4, 4):uint()
                 local val_text
                 if val == 0xFFFFFFFE then
-                    val_text = "No data"
+                    val_text = "データなし"
                 else
                     val_text = string.format("%d", val)
                 end
                 edttree:add(edt:range(2 + i * 4, 4), string.format("[%02d:%02d] %s",
                     math.floor(i / 2), (i % 2) * 30, val_text))
             end
-            edttree:append_text(string.format(" (day=%d, %d entries)", collection_day, count))
-            tree:append_text(string.format(" = day=%d, %d entries", collection_day, count))
+            edttree:append_text(string.format(" (収集日=%d, %dコマ)", collection_day, count))
+            tree:append_text(string.format(" = 収集日=%d, %dコマ", collection_day, count))
 
         elseif epc:uint() == 0xE5 then
             -- Day for which the historical data is to be retrieved 1 (1 byte, 0-99)
@@ -170,7 +170,7 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
                 do return end
             end
             local day = edt:uint()
-            local text = day == 0 and "Today" or string.format("%d day(s) ago", day)
+            local text = day == 0 and "当日" or string.format("%d日前", day)
             edttree:append_text(string.format(" (%s)", text))
             tree:append_text(string.format(" = %s", text))
 
@@ -192,15 +192,15 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
             local r_phase = edt:range(0, 2):int()
             local t_raw   = edt:range(2, 2):uint()
             local t_phase = edt:range(2, 2):int()
-            edttree:add(edt:range(0, 2), string.format("R-phase: %.1f A", r_phase / 10.0))
+            edttree:add(edt:range(0, 2), string.format("R相: %.1f A", r_phase / 10.0))
             if t_raw == 0x7FFE then
-                edttree:add(edt:range(2, 2), "T-phase: N/A (single-phase 2-wire)")
-                edttree:append_text(string.format(" (R=%.1f A, T=N/A)", r_phase / 10.0))
-                tree:append_text(string.format(" = R=%.1f A, T=N/A", r_phase / 10.0))
+                edttree:add(edt:range(2, 2), "T相: N/A（単相2線式）")
+                edttree:append_text(string.format(" (R相=%.1f A, T相=N/A)", r_phase / 10.0))
+                tree:append_text(string.format(" = R相=%.1f A, T相=N/A", r_phase / 10.0))
             else
-                edttree:add(edt:range(2, 2), string.format("T-phase: %.1f A", t_phase / 10.0))
-                edttree:append_text(string.format(" (R=%.1f A, T=%.1f A)", r_phase / 10.0, t_phase / 10.0))
-                tree:append_text(string.format(" = R=%.1f A, T=%.1f A", r_phase / 10.0, t_phase / 10.0))
+                edttree:add(edt:range(2, 2), string.format("T相: %.1f A", t_phase / 10.0))
+                edttree:append_text(string.format(" (R相=%.1f A, T相=%.1f A)", r_phase / 10.0, t_phase / 10.0))
+                tree:append_text(string.format(" = R相=%.1f A, T相=%.1f A", r_phase / 10.0, t_phase / 10.0))
             end
 
         elseif epc:uint() == 0xEA or epc:uint() == 0xEB then
@@ -216,12 +216,12 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
             local minute = edt:range(5, 1):uint()
             local second = edt:range(6, 1):uint()
             local energy = edt:range(7, 4):uint()
-            edttree:add(edt:range(0, 4), string.format("Date: %04d/%02d/%02d", year, month, day))
-            edttree:add(edt:range(4, 3), string.format("Time: %02d:%02d:%02d", hour, minute, second))
-            edttree:add(edt:range(7, 4), string.format("Energy: %d", energy))
-            edttree:append_text(string.format(" (%04d/%02d/%02d %02d:%02d:%02d energy=%d)",
+            edttree:add(edt:range(0, 4), string.format("計測年月日: %04d/%02d/%02d", year, month, day))
+            edttree:add(edt:range(4, 3), string.format("計測時刻: %02d:%02d:%02d", hour, minute, second))
+            edttree:add(edt:range(7, 4), string.format("積算電力量: %d", energy))
+            edttree:append_text(string.format(" (%04d/%02d/%02d %02d:%02d:%02d 積算電力量=%d)",
                 year, month, day, hour, minute, second, energy))
-            tree:append_text(string.format(" = %04d/%02d/%02d %02d:%02d:%02d energy=%d",
+            tree:append_text(string.format(" = %04d/%02d/%02d %02d:%02d:%02d 積算電力量=%d",
                 year, month, day, hour, minute, second, energy))
 
         elseif epc:uint() == 0xEC or epc:uint() == 0xEE then
@@ -239,22 +239,22 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
             local hour   = edt:range(4, 1):uint()
             local minute = edt:range(5, 1):uint()
             local count  = edt:range(6, 1):uint()
-            edttree:add(edt:range(0, 6), string.format("Collection datetime: %04d/%02d/%02d %02d:%02d",
+            edttree:add(edt:range(0, 6), string.format("積算履歴収集日時: %04d/%02d/%02d %02d:%02d",
                 year, month, day, hour, minute))
-            edttree:add(edt:range(6, 1), string.format("Count: %d", count))
+            edttree:add(edt:range(6, 1), string.format("収集コマ数: %d", count))
             for i = 0, count - 1 do
                 local offset = 7 + i * 8
                 if offset + 8 > pdc:uint() then break end
                 local forward = edt:range(offset, 4):uint()
                 local reverse = edt:range(offset + 4, 4):uint()
-                local fwd_text = forward == 0xFFFFFFFE and "No data" or string.format("%d", forward)
-                local rev_text = reverse == 0xFFFFFFFE and "No data" or string.format("%d", reverse)
+                local fwd_text = forward == 0xFFFFFFFE and "データなし" or string.format("%d", forward)
+                local rev_text = reverse == 0xFFFFFFFE and "データなし" or string.format("%d", reverse)
                 edttree:add(edt:range(offset, 8),
-                    string.format("[%d] fwd=%s rev=%s", i + 1, fwd_text, rev_text))
+                    string.format("[%d] 正方向=%s 逆方向=%s", i + 1, fwd_text, rev_text))
             end
-            edttree:append_text(string.format(" (%04d/%02d/%02d %02d:%02d, %d entries)",
+            edttree:append_text(string.format(" (%04d/%02d/%02d %02d:%02d, %dコマ)",
                 year, month, day, hour, minute, count))
-            tree:append_text(string.format(" = %04d/%02d/%02d %02d:%02d, %d entries",
+            tree:append_text(string.format(" = %04d/%02d/%02d %02d:%02d, %dコマ",
                 year, month, day, hour, minute, count))
 
         elseif epc:uint() == 0xED or epc:uint() == 0xEF then
@@ -269,12 +269,12 @@ local function lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, ed
             local hour   = edt:range(4, 1):uint()
             local minute = edt:range(5, 1):uint()
             local count  = edt:range(6, 1):uint()
-            edttree:add(edt:range(0, 6), string.format("Datetime: %04d/%02d/%02d %02d:%02d",
+            edttree:add(edt:range(0, 6), string.format("積算履歴収集日時: %04d/%02d/%02d %02d:%02d",
                 year, month, day, hour, minute))
-            edttree:add(edt:range(6, 1), string.format("Count: %d", count))
-            edttree:append_text(string.format(" (%04d/%02d/%02d %02d:%02d, count=%d)",
+            edttree:add(edt:range(6, 1), string.format("収集コマ数: %d", count))
+            edttree:append_text(string.format(" (%04d/%02d/%02d %02d:%02d, 収集コマ数=%d)",
                 year, month, day, hour, minute, count))
-            tree:append_text(string.format(" = %04d/%02d/%02d %02d:%02d, count=%d",
+            tree:append_text(string.format(" = %04d/%02d/%02d %02d:%02d, 収集コマ数=%d",
                 year, month, day, hour, minute, count))
         end
     end
