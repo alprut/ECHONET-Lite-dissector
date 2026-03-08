@@ -30,6 +30,13 @@ local function epcparser(classgroup, class, epc, pdc, edt, tree, edata)
             do return end
         end
     end
+    if classgroup:uint() == 0x02 then -- housing and facility related class
+        if class:uint() == 0x88 then -- low voltage smart electric energy meter
+            lowvoltage_smart_meter(classgroup, class, epc, pdc, edt, tree, edata)
+            do return end
+        end
+    end
+    tree:add(edata.fields.epc, epc)
     tree:add(edata.fields.epc, epc)
     tree:add(edata.fields.pdc, pdc)
     if edt:len() > 0 then
