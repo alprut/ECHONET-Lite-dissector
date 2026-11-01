@@ -178,6 +178,7 @@ list.class = {
         [0x8A] = "High voltage smart electric energy meter",
         [0x8B] = "Kerosene oil meter",
         [0x8C] = "Smart kerosene oil meter",
+        [0x8F] = "Bi-directional High voltage smart electric energy meter",
         [0x90] = "General lighting class",
         [0x91] = "Single function lighting",
         [0x99] = "Emergency lighting",
