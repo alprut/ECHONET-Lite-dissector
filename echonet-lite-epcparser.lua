@@ -14,6 +14,9 @@
 --
 local nodeprofile = require("group-0x0e-node-profile")
 local openclosesensor = require("group-0x00-open-close")
+local lowvoltage_smart_meter = require("group-0x02-low-voltage-smart-meter")
+local highvoltage_smart_meter = require("group-0x02-high-voltage-smart-meter")
+local bidir_highvoltage_smart_meter = require("group-0x02-bidir-high-voltage-smart-meter")
 
 -- ========================================================
 -- ECHONET Lite epc parser
